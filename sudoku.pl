@@ -62,25 +62,22 @@ HEADER
 
 # First clausules: just 1 number per square
 # ⋀ (i=1,n²) [ ⋁ (j=n*(i-1)+1,n*i S_i,j ]
-for my $i (0..$n_squares*$n_squares-1) 
-{
-    for my $j (1..$n_squares) { 
-        print($i*$n_squares+$j, " "); 
-    }
-    print "0 \n";
+for(my $j = 1; $j <= $n_squares; $j++) {
+    for(my $i = 1; $i <= $n_squares; $i++)
+        { &one_per_line($i, $j); }
 }
 
 # Second clausules: just 1 number per column
 # ¬S_i,j ∨ ¬S_i,k, ∀ i ∈ [1,n²], ∀ j ∈ [1,n], ∀ k ∈ [j,n]
-for(my $i = 1; $i <= $n_squares; $i++) { 
-    for(my $j = 1; $j <= $n_squares; $j++)
-        { &two_by_two_columns($i, $j); }
+for(my $x = 1; $x <= $n_squares; $x++) {
+    for(my $y = 1; $y <= $n_squares; $y++)
+        { &two_by_two_columns($x, $y); }
 }
 
 # Third clausules: just 1 number per subgrid
 # ¬S_i+k,j+k ∨ ¬S_i+l,j+l, ∀ i,j ∈ [1,n], ∀ k ∈ [1,√n], l ∈ [j,√n]
 for(my $y = 1; $y <= $n_squares; $y += $prop) {
-    for(my $x = 1; $x <= $n_squares; $x++) 
+    for(my $x = 1; $x <= $n_squares; $x++)
         { &two_by_two_grid($x, $y); }
 }
 
@@ -106,18 +103,37 @@ sub n_lines {
     return $n_lines;
 }
 
-# Subroutine:  two_by_two_columns
+# Subroutine:  one_per_line
 # Arguments:   virtual positions in the grid 
 #              (ignoring that each column has 9 elements)
 # Description: Given a a list, prints the elements $a and $b 
 #              in the format "-$a -$b 0".
+sub one_per_line
+{
+    my ($x, $y) = (shift, shift);
+    my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
+    
+    for(my $k = 0; $k < $n_squares; $k++) {
+        print($position + $k, " "); 
+    }
+    print "0 \n";
+}
+    
+# Subroutine:  two_by_two_columns
+# Arguments:   virtual positions in the grid 
+#              (ignoring that each column has 9 elements)
+# Description: Given the positions of a grid, prints the clauses
+#              in a combination of 2 by 2 for the positions above
+#              it (in the format "-$a -$b 0").
 sub two_by_two_columns 
 {
+    # Variables
     my  ($x, $y) = (shift, shift);
     my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
     
     for my $pos ($position .. $position+($n_squares-1) )
     {
+        my $first = $position + ($x-1) * $n_squares**2;
         for(my $k = $x+1; $k <= $n_squares; $k++) 
         { 
             #                           x
@@ -144,7 +160,6 @@ sub two_by_two_columns
             # ¬A8 ∨ ¬B8, ¬A8 ∨ ¬C8, ...
             # ¬A9 ∨ ¬B9, ¬A9 ∨ ¬C9, ...
 
-            my $first  = $pos + ($x-1) * $n_squares**2;
             my $second = $pos + ($k-1) * $n_squares**2;
             
             print "-$first -$second 0\n" if($first != $second);
@@ -155,8 +170,9 @@ sub two_by_two_columns
 # Subroutine:  two_by_two_grid
 # Arguments:   virtual positions in the grid 
 #              (ignoring that each column has 9 elements)
-# Description: Given a a list, prints the elements $a and $b 
-#              in the format "-$a -$b 0".
+# Description: Given the positions of a grid, prints the clauses
+#              in a combination of 2 by 2 for the positions in 
+#              its subgrid (in the format "-$a -$b 0").
 sub two_by_two_grid
 {
     my  ($x, $y) = (shift, shift);
