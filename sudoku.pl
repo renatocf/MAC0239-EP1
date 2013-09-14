@@ -76,18 +76,6 @@ for(my $i = 1; $i <= $n_squares; $i++) {
     for(my $j = 1; $j <= $n_squares; $j++)
         { &two_by_two_columns($i, $j); }
 }
-# for(my $i = 1; $i <= $n_squares*$n_squares; $i++) # (1..$n_squares)
-# {
-#     for(my $j = 1; $j <= $n_squares; $j++) # (1..$n_squares)
-#     {
-#         # First element goes from 
-#         my $first = ($j-1)*$n_squares*$n_squares + $i;
-#         for(my $k = $j+1; $k <= $n_squares; $k++) { #($j+1..$n_squares)
-#             my $second = ($k-1) * $n_squares*$n_squares + $i;
-#             print "-$first -$second 0\n" if($first != $second);
-#         }
-#     }
-# }
 
 # Third clausules: just 1 number per subgrid
 # ¬S_i+k,j+k ∨ ¬S_i+l,j+l, ∀ i,j ∈ [1,n], ∀ k ∈ [1,√n], l ∈ [j,√n]
