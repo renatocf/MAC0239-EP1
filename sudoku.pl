@@ -69,8 +69,8 @@ for(my $j = 1; $j <= $n_squares; $j++) {
 
 # Second clausules: just 1 number per column
 # ¬S_i,j ∨ ¬S_i,k, ∀ i ∈ [1,n²], ∀ j ∈ [1,n], ∀ k ∈ [j,n]
-for(my $x = 1; $x <= $n_squares; $x++) {
-    for(my $y = 1; $y <= $n_squares; $y++)
+for(my $y = 1; $y <= $n_squares; $y++) {
+    for(my $x = 1; $x <= $n_squares; $x++)
         { &two_by_two_columns($x, $y); }
 }
 
@@ -93,13 +93,13 @@ for(my $y = 1; $y <= $n_squares; $y += $prop) {
 sub n_lines {
     my $n_squares = shift;       # Number of squares
     my $n_lines = $n_squares**2; # 1 Number per position in the grid.
-        
+    
     # Just 1 number per column
     $n_lines += $n_squares**2 * ($n_squares*($n_squares-1))/2;
     
     # Just 1 number per subgrid
-    $n_lines += $prop * $n_squares**2 * ($n_squares*($n_squares-1))/2;
-                                           
+    $n_lines += $prop**2 * $n_squares * ($n_squares*($n_squares-1))/2;
+    
     return $n_lines;
 }
 
