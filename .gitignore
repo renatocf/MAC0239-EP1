@@ -1,0 +1,17 @@
+# All SAT solvers stuff 
+# that can be generated
+*.cnf
+*.ans
+*.zchaff
+*.minisat
+
+# pdf's
+*.pdf
+
+# zChaff file
+zchaff*
+
+# Compacted Files
+*.tar.gz
+*.tar
+*.zip
