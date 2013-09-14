@@ -62,24 +62,15 @@ HEADER
 
 # First clausules: just 1 number per square
 # ⋀ (i=1,n²) [ ⋁ (j=n*(i-1)+1,n*i S_i,j ]
-for(my $j = 1; $j <= $n_squares; $j++) {
-    for(my $i = 1; $i <= $n_squares; $i++)
-        { &one_per_line($i, $j); }
-}
+&grid_scroll(1, \&one_per_line);
 
 # Second clausules: just 1 number per column
 # ¬S_i,j ∨ ¬S_i,k, ∀ i ∈ [1,n²], ∀ j ∈ [1,n], ∀ k ∈ [j,n]
-for(my $y = 1; $y <= $n_squares; $y++) {
-    for(my $x = 1; $x <= $n_squares; $x++)
-        { &two_by_two_columns($x, $y); }
-}
+&grid_scroll(1, \&two_by_two_columns);
 
 # Third clausules: just 1 number per subgrid
 # ¬S_i+k,j+k ∨ ¬S_i+l,j+l, ∀ i,j ∈ [1,n], ∀ k ∈ [1,√n], l ∈ [j,√n]
-for(my $y = 1; $y <= $n_squares; $y += $prop) {
-    for(my $x = 1; $x <= $n_squares; $x++)
-        { &two_by_two_grid($x, $y); }
-}
+&grid_scroll($prop, \&two_by_two_grid);
 
 #######################################################################
 ##                          SUBROUTINES                              ##
@@ -90,7 +81,8 @@ for(my $y = 1; $y <= $n_squares; $y += $prop) {
 # Description: Given the number of squares, deterministically 
 #              calculates how may clausules will be used to
 #              create an entry in the cnf format.
-sub n_lines {
+sub n_lines 
+{
     my $n_squares = shift;       # Number of squares
     my $n_lines = $n_squares**2; # 1 Number per position in the grid.
     
@@ -101,6 +93,24 @@ sub n_lines {
     $n_lines += $prop**2 * $n_squares * ($n_squares*($n_squares-1))/2;
     
     return $n_lines;
+}
+
+# Subroutine:  one_per_line
+# Arguments:   virtual positions in the grid 
+#              (ignoring that each column has 9 elements)
+# Description: Given a a list, prints the elements $a and $b 
+#              in the format "-$a -$b 0".
+sub grid_scroll 
+{
+    my ($size, $func) = (shift, shift);
+    
+    $n_squares % $size == 0
+    or die "grid_scroll: $size does not divide $n_squares\n",
+           "             It must do it to scroll the grid\n";
+    
+    for(my $y = 1; $y <= $n_squares; $y += $size) {
+        for(my $x = 1; $x <= $n_squares; $x += $size) { &$func($x,$y); }
+    }
 }
 
 # Subroutine:  one_per_line
