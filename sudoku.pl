@@ -121,12 +121,12 @@ sub grid_scroll
     }
 }
 
-# Subroutine:  one_per_line
+# Subroutine:  one_per_square
 # Arguments:   virtual positions in the grid 
 #              (ignoring that each column has 9 elements)
 # Description: Given a a list, prints the elements $a and $b 
 #              in the format "-$a -$b 0".
-sub one_per_line
+sub one_per_square
 {
     my ($x, $y) = (shift, shift);
     my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
