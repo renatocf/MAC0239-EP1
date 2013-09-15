@@ -37,7 +37,7 @@ my $n_squares = $prop**2;
 
 # Number of variables and clausules
 my $n_vars = $n_squares**3;
-my $n_clausules = n_lines($n_squares);
+my $n_clausules = &n_lines($n_squares);
 
 #######################################################################
 ##                             HEADER                                ##
