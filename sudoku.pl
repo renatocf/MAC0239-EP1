@@ -140,11 +140,12 @@ sub two_by_two_columns
     # Variables
     my  ($x, $y) = (shift, shift);
     my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
+    # say "POSITION==> $position";
     
     for my $pos ($position .. $position+($n_squares-1) )
     {
-        my $first = $position + ($x-1) * $n_squares**2;
-        for(my $k = $x+1; $k <= $n_squares; $k++) 
+        my ($first, $second) = ($pos, $pos);
+        for(my $k = $y+1; $k <= $n_squares; $k++) 
         { 
             #                           x
             #      .--------------------^-----------------------.
@@ -170,9 +171,10 @@ sub two_by_two_columns
             # ¬A8 ∨ ¬B8, ¬A8 ∨ ¬C8, ...
             # ¬A9 ∨ ¬B9, ¬A9 ∨ ¬C9, ...
 
-            my $second = $pos + ($k-1) * $n_squares**2;
+            $second += $n_squares**2;
             
-            print "-$first -$second 0\n" if($first != $second);
+            # say "pos: $pos k: $k";
+            print "-$first -$second 0\n";
         }
     }
 }
