@@ -22,7 +22,7 @@ GetOptions("help" => \$help);
 # Help message
 if($help) { print while <DATA>; exit; }
 
-# Number of queens
+# Sudoku proportions
 scalar @ARGV == 1 and my $prop = shift @ARGV 
 or die "USAGE: perl sudoku.pl prop\n";
 
@@ -62,13 +62,17 @@ HEADER
 
 # First clausules: just 1 number per square
 # ⋀ (i=1,n²) [ ⋁ (j=n*(i-1)+1,n*i S_i,j ]
-&grid_scroll(1, \&one_per_line);
+&grid_scroll(1, \&one_per_square);
 
-# Second clausules: just 1 number per column
+# Second clausules: just 1 number per line
+# ¬S_i,j ∨ ¬S_k,j, ∀ i ∈ [1,n²], ∀ j ∈ [1,n], ∀ k ∈ [i,n²]
+&grid_scroll(1, \&two_by_two_lines);
+
+# Third clausules: just 1 number per column
 # ¬S_i,j ∨ ¬S_i,k, ∀ i ∈ [1,n²], ∀ j ∈ [1,n], ∀ k ∈ [j,n]
 &grid_scroll(1, \&two_by_two_columns);
 
-# Third clausules: just 1 number per subgrid
+# Fourth clausules: just 1 number per subgrid
 # ¬S_i+k,j+k ∨ ¬S_i+l,j+l, ∀ i,j ∈ [1,n], ∀ k ∈ [1,√n], l ∈ [j,√n]
 &grid_scroll($prop, \&two_by_two_grid);
 
@@ -86,20 +90,24 @@ sub n_lines
     my $n_squares = shift;       # Number of squares
     my $n_lines = $n_squares**2; # 1 Number per position in the grid.
     
-    # Just 1 number per column
+    # Just 1 number of each type per line
     $n_lines += $n_squares**2 * ($n_squares*($n_squares-1))/2;
     
-    # Just 1 number per subgrid
+    # Just 1 number of each type per column
+    $n_lines += $n_squares**2 * ($n_squares*($n_squares-1))/2;
+    
+    # Just 1 number of each type per subgrid
     $n_lines += $prop**2 * $n_squares * ($n_squares*($n_squares-1))/2;
     
     return $n_lines;
 }
 
-# Subroutine:  one_per_line
-# Arguments:   virtual positions in the grid 
-#              (ignoring that each column has 9 elements)
-# Description: Given a a list, prints the elements $a and $b 
-#              in the format "-$a -$b 0".
+# Subroutine:  grid_scroll
+# Arguments:   size of the scroll, function to be executed
+#              for each one of the selected points
+# Description: Given a function, applies it in size to size
+#              squares in the grid (sizemust be a divisor 
+#              of the number of squares).
 sub grid_scroll 
 {
     my ($size, $func) = (shift, shift);
@@ -123,12 +131,61 @@ sub one_per_line
     my ($x, $y) = (shift, shift);
     my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
     
-    for(my $k = 0; $k < $n_squares; $k++) {
+    for(my $k = 0; $k < $n_squares; $k++) 
+    {    
+        #                           x
+        #      .--------------------^-----------------------.
+        #        01   02   03   04   05   06   07   08   09     …
+        #      .----.----.----.----.----.----.----.----.----.-- …
+        # y 01 | A1 | A2 | A3 | A4 | A5 | A6 | A7 | A8 | A9 | A
+        #      |----|----|----|----|----|----|----|----|----|--
+        #                            ⋮ 
+        # Produces:
+        # A1 ∨ A2 ∨ A3 ∨ A4 ∨ A5 ∨ A6 ∨ A7 ∨ A8 ∨ A9 
+        
         print($position + $k, " "); 
     }
     print "0 \n";
 }
     
+# Subroutine:  two_by_two_lines
+# Arguments:   virtual positions in the grid 
+#              (ignoring that each column has 9 elements)
+# Description: Given the positions of a grid, prints the clauses
+#              in a combination of 2 by 2 for the positions in the
+#              right of it (in the format "-$a -$b 0").
+sub two_by_two_lines
+{
+    # Variables
+    my  ($x, $y) = (shift, shift);
+    my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
+    
+    for my $pos ($position .. $position+($n_squares-1) )
+    {
+        my ($first, $second) = ($pos, $pos);
+        for(my $k = $x+1; $k <= $n_squares; $k++) 
+        { 
+            #              x                  x+1               x+2    …
+            #    .---------- … -----. .---------- … -----. .---------- …
+            #     01   02         09   01   02         09   01   02     
+            #   .----.----.- … -.----.----.----.- … -.----.----.----.- …
+            # y | A1 | A2 |  …  | A9 | B1 | B2 |  …  | B9 | C1 | C2 |  …
+            #   |----|----|- … -|----|----|----|- … -|----|----|----|- …
+            #                          ⋮                    
+            # 
+            # Produces (in this order): 
+            # 
+            # ¬A1 ∨ ¬B1, ¬A1 ∨ ¬C1, ... , ¬B1 ∨ ¬C1, ...
+            # ¬A2 ∨ ¬B2, ¬A2 ∨ ¬C2, ... , ¬B2 ∨ ¬C2, ...
+            # ...
+            # ¬A9 ∨ ¬B9, ...
+            
+            $second += $n_squares;
+            print "-$first -$second 0\n";
+        }
+    }
+}
+
 # Subroutine:  two_by_two_columns
 # Arguments:   virtual positions in the grid 
 #              (ignoring that each column has 9 elements)
