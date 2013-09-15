@@ -1,76 +1,93 @@
 #!/usr/bin/perl
-package main;
+package Sudoku;
 use v5.14;
-
-#######################################################################
-##                    PACKAGE/GLOBAL VARIABLES                       ##
-#######################################################################
 
 # Pragmas
 use strict; 
 use warnings;
 
-# Options
-use Getopt::Long;
-my $help = undef;
-GetOptions("help" => \$help);
+#######################################################################
+##                            CONSTRUCTOR                            ##
+#######################################################################
 
-# Help message
-if($help) { print while <DATA>; exit; }
+sub new 
+{
+    # Class name
+    my $invocant = shift;
+    my $class = ref($invocant) || $invocant;
+    
+    # Constructor args
+    my $prop = shift
+    or die "Sudoku's proportion required, stopped";
+    
+    $prop =~ /^(\d+)$/
+    or die "The prop must be made only of integers, stopped";
 
-# Sudoku proportions
-scalar @ARGV == 1 and my $prop = shift @ARGV 
-or die "USAGE: perl sudoku.pl prop\n";
-
-$prop =~ /^(\d+)$/
-or die "The prop must be made only of integers";
-
-($prop = $1) > 0
-or die "The prop must be strictly positive";
-
-# Number of squares
-my $n_squares = $prop**2;
-
-# Number of variables and clausules
-my $n_vars = $n_squares**3;
-my $n_clausules = &n_lines($n_squares);
+    ($prop = $1) > 0
+    or die "The prop must be strictly positive, stopped";
+    
+    # Number of squares
+    my $n_squares = $prop**2;
+    
+    # Object (reference to a hash)
+    my $sudoku = {
+        PROP        => $prop,
+        N_SQUARES   => $n_squares,
+        N_VARS      => $n_squares**3,
+        N_CLAUSULES => &n_lines($prop, $n_squares)
+    };
+    
+    bless $sudoku, $class;
+    return $sudoku;
+}
 
 #######################################################################
 ##                             HEADER                                ##
 #######################################################################
 
 # Comments section
-print << "COMMENTS";
+my $comments = << "COMMENTS";
 c Nome      Renato Cordeiro Ferreira
 c MAC0239   Metodos Formais de Programacao
 c Professor Marcelo Finger
 c Problema  Sudoku 9x9
 COMMENTS
 
-# Header/Preamble section
-print << "HEADER";
-p cnf $n_vars $n_clausules
-HEADER
-
 #######################################################################
 ##                            CLAUSULES                              ##
 #######################################################################
 
-# First clausules: just 1 number per square
-# ⋀ (i=1,n²) [ ⋁ (j=n*(i-1)+1,n*i S_i,j ]
-&grid_scroll(1, \&one_per_square);
+sub gen_cnf 
+{
+    my $sudoku    = shift;                # Object
+    my $prop      = $sudoku->{PROP};      # Proportion
+    my $n_squares = $sudoku->{N_SQUARES}; # Number of squares
+    
+    open(my $cnf, ">", "${n_squares}x${n_squares}_sudoku.cnf");
+    select $cnf; $| = 1;
+    
+    # Comments and header
+    print "$comments";
+    print "p cnf $sudoku->{N_VARS} $sudoku->{N_CLAUSULES}\n";
+    
+    # First clausules: just 1 number per square
+    # ⋀ (i=1,n²) [ ⋁ (j=n*(i-1)+1,n*i S_i,j ]
+    $sudoku->grid_scroll(1, \&one_per_square);
 
-# Second clausules: just 1 number per line
-# ¬S_i,j ∨ ¬S_k,j, ∀ i ∈ [1,n²], ∀ j ∈ [1,n], ∀ k ∈ [i,n²]
-&grid_scroll(1, \&two_by_two_lines);
+    # Second clausules: just 1 number per line
+    # ¬S_i,j ∨ ¬S_k,j, ∀ i ∈ [1,n²], ∀ j ∈ [1,n], ∀ k ∈ [i,n²]
+    $sudoku->grid_scroll(1, \&two_by_two_lines);
 
-# Third clausules: just 1 number per column
-# ¬S_i,j ∨ ¬S_i,k, ∀ i ∈ [1,n²], ∀ j ∈ [1,n], ∀ k ∈ [j,n]
-&grid_scroll(1, \&two_by_two_columns);
+    # Third clausules: just 1 number per column
+    # ¬S_i,j ∨ ¬S_i,k, ∀ i ∈ [1,n²], ∀ j ∈ [1,n], ∀ k ∈ [j,n]
+    $sudoku->grid_scroll(1, \&two_by_two_columns);
 
-# Fourth clausules: just 1 number per subgrid
-# ¬S_i+k,j+k ∨ ¬S_i+l,j+l, ∀ i,j ∈ [1,n], ∀ k ∈ [1,√n], l ∈ [j,√n]
-&grid_scroll($prop, \&two_by_two_grid);
+    # Fourth clausules: just 1 number per subgrid
+    # ¬S_i+k,j+k ∨ ¬S_i+l,j+l, ∀ i,j ∈ [1,n], ∀ k ∈ [1,√n], l ∈ [j,√n]
+    $sudoku->grid_scroll($prop, \&two_by_two_grid);
+    
+    close($cnf);
+}
 
 #######################################################################
 ##                          SUBROUTINES                              ##
@@ -83,8 +100,11 @@ HEADER
 #              create an entry in the cnf format.
 sub n_lines 
 {
-    my $n_squares = shift;       # Number of squares
-    my $n_lines = $n_squares**2; # 1 Number per position in the grid.
+    # Proportion and number of squares
+    my ($prop, $n_squares) = (shift, shift); 
+    
+    # 1 Number per position in the grid.
+    my $n_lines = $n_squares**2; 
     
     # Just 1 number of each type per line
     $n_lines += $n_squares**2 * ($n_squares*($n_squares-1))/2;
@@ -106,6 +126,10 @@ sub n_lines
 #              of the number of squares).
 sub grid_scroll 
 {
+    my $sudoku = shift;                   # Object
+    my $n_squares = $sudoku->{N_SQUARES}; # Number of squares
+    
+    # Size and function
     my ($size, $func) = (shift, shift);
     
     $n_squares % $size == 0
@@ -113,7 +137,9 @@ sub grid_scroll
            "             It must do it to scroll the grid\n";
     
     for(my $y = 1; $y <= $n_squares; $y += $size) {
-        for(my $x = 1; $x <= $n_squares; $x += $size) { &$func($x,$y); }
+        for(my $x = 1; $x <= $n_squares; $x += $size) { 
+            $sudoku->$func($x,$y); 
+        }
     }
 }
 
@@ -124,7 +150,11 @@ sub grid_scroll
 #              in the format "-$a -$b 0".
 sub one_per_square
 {
-    my ($x, $y) = (shift, shift);
+    my $sudoku = shift;                   # Object
+    my $n_squares = $sudoku->{N_SQUARES}; # Number of squares
+    
+    # Localization and position
+    my  ($x, $y) = (shift, shift);
     my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
     
     for(my $k = 0; $k < $n_squares; $k++) 
@@ -152,7 +182,10 @@ sub one_per_square
 #              right of it (in the format "-$a -$b 0").
 sub two_by_two_lines
 {
-    # Variables
+    my $sudoku = shift;                   # Object
+    my $n_squares = $sudoku->{N_SQUARES}; # Number of squares
+    
+    # Localization and position
     my  ($x, $y) = (shift, shift);
     my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
     
@@ -190,7 +223,10 @@ sub two_by_two_lines
 #              it (in the format "-$a -$b 0").
 sub two_by_two_columns 
 {
-    # Variables
+    my $sudoku = shift;                   # Object
+    my $n_squares = $sudoku->{N_SQUARES}; # Number of squares
+    
+    # Localization and position
     my  ($x, $y) = (shift, shift);
     my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
     
@@ -237,6 +273,11 @@ sub two_by_two_columns
 #              its subgrid (in the format "-$a -$b 0").
 sub two_by_two_grid
 {
+    my $sudoku = shift;                   # Object
+    my $prop      = $sudoku->{PROP};      # Proportion
+    my $n_squares = $sudoku->{N_SQUARES}; # Number of squares
+    
+    # Localization and position
     my  ($x, $y) = (shift, shift);
     my $position = 1 + ($x-1)*$n_squares + ($y-1)*$n_squares**2;
     
