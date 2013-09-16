@@ -15,6 +15,7 @@ use Sudoku;
 
 my Sudoku $sudoku = new Sudoku(3);
 $sudoku->gen_cnf();
+$sudoku->grid_print();
 
 #######################################################################
 ##                          DOCUMENTATION                            ##

@@ -13,7 +13,9 @@ use fml_lines;
 use fml_square;
 use fml_subgrid;
 use grid_scroll;
+use grid_print;
 use num_lines;
+use solution;
 
 #######################################################################
 ##                            CONSTRUCTOR                            ##
@@ -43,11 +45,18 @@ sub new
         PROP        => $prop,
         N_SQUARES   => $n_squares,
         N_VARS      => $n_squares**3,
-        N_CLAUSULES => &n_lines($prop, $n_squares)
+        N_CLAUSULES => &n_lines($prop, $n_squares),
+        ANSWER      => undef
     };
     
     bless $sudoku, $class;
     return $sudoku;
+}
+
+sub DESTROY
+{
+    my $sudoku = shift;
+    $sudoku->{ANSWER}->close() if $sudoku->{ANSWER};
 }
 
 1;
