@@ -51,5 +51,5 @@ sub gen_cnf
     # ¬S_i+k,j+k ∨ ¬S_i+l,j+l, ∀ i,j ∈ [1,n], ∀ k ∈ [1,√n], l ∈ [j,√n]
     $sudoku->grid_scroll($prop, \&fml_subgrid);
     
-    close($cnf);
+    close($cnf); select STDOUT;
 }
