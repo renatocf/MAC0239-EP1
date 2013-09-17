@@ -17,6 +17,7 @@ sub fml_given
     my $n_vars    = $sudoku->{N_VARS};    # Number of vars
     my $n_squares = $sudoku->{N_SQUARES}; # Number of squares
     
+    say $n_squares**2;
     for(my $i = 0; $i < $n_squares**2; $i++)
     {
         my $number = $input->[$i];

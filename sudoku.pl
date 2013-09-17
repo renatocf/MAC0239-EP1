@@ -20,11 +20,12 @@ use Sudoku;
 # Options
 use Getopt::Long;
 my $help = undef;
-my $prop = 3;
+my $size = 3;
 GetOptions(
-    "help"         => \$help, 
-    "proportion=i" => \$prop,
+    "help"   => \$help, 
+    "size=i" => \$size,
 );
+my $prop = sqrt $size;
 
 # Usage
 scalar @ARGV == 1
