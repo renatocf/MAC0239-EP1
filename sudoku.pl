@@ -16,15 +16,15 @@ use Sudoku;
 use Zchaff;
 
 scalar @ARGV == 1
-or die "USAGE: sudoku.pl sudoku.txt";
+or die "USAGE: sudoku.pl input.txt";
 
 my $filename = shift;
 open(my $fh, "<", $filename);
 
 my Sudoku $sudoku = new Sudoku(3);
-$sudoku->upload($fh);
-$sudoku->gen_cnf();
-$sudoku->grid_print();
+$sudoku->upload     ($fh);
+$sudoku->gen_cnf    ();
+$sudoku->grid_print ();
 
 #######################################################################
 ##                          DOCUMENTATION                            ##
@@ -33,4 +33,3 @@ __END__
 
 SUDOKU:              
 --------------------
-

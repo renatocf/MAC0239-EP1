@@ -33,7 +33,10 @@ sub gen_cnf
     
     # Comments and header
     print "$comments";
-    print "p cnf $sudoku->{N_VARS} $sudoku->{N_CLAUSULES}\n";
+    print "p cnf $sudoku->{N_VARS} $sudoku->{N_CLAUSES}\n";
+    
+    # Restrictions: all the sudoku's input
+    $sudoku->fml_given;
     
     # First clausules: just 1 number per square
     # ⋀ (i=1,n²) [ ⋁ (j=n*(i-1)+1,n*i S_i,j ]

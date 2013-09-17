@@ -10,6 +10,7 @@ use warnings;
 use cnf;
 use fml_columns;
 use fml_lines;
+use fml_given;
 use fml_square;
 use fml_subgrid;
 use grid_scroll;
@@ -40,13 +41,14 @@ sub new
     
     # Number of squares
     my $n_squares = $prop**2;
+    my $n_lines   = n_lines($prop, $n_squares);
     
     # Object (reference to a hash)
     my $sudoku = {
         PROP        => $prop,
         N_SQUARES   => $n_squares,
         N_VARS      => $n_squares**3,
-        N_CLAUSULES => &n_lines($prop, $n_squares),
+        N_CLAUSES   => $n_lines,
         SUDOKU      => [],
         ANSWER      => undef
     };

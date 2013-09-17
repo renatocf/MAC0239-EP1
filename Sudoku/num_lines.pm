@@ -14,7 +14,7 @@ use warnings;
 sub n_lines 
 {
     # Proportion and number of squares
-    my ($prop, $n_squares) = (shift, shift); 
+    my ($prop, $n_squares) = (shift, shift);
     
     # 1 Number per position in the grid.
     my $n_lines = $n_squares**2; 
