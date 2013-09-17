@@ -16,6 +16,7 @@ use grid_scroll;
 use grid_print;
 use num_lines;
 use solution;
+use upload;
 
 #######################################################################
 ##                            CONSTRUCTOR                            ##
@@ -46,6 +47,7 @@ sub new
         N_SQUARES   => $n_squares,
         N_VARS      => $n_squares**3,
         N_CLAUSULES => &n_lines($prop, $n_squares),
+        SUDOKU      => [],
         ANSWER      => undef
     };
     
