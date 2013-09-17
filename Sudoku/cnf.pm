@@ -39,7 +39,7 @@ sub gen_cnf
     $sudoku->fml_given;
     
     # First clausules: just 1 number per square
-    # ⋀ (i=1,n²) [ ⋁ (j=n*(i-1)+1,n*i S_i,j ]
+    # ⋀ (i=1,n²) [ ⋁ (j=n*(i-1)+1,n*i) S_i,j ]
     $sudoku->grid_scroll(1, \&fml_square);
 
     # Second clausules: just 1 number per line
