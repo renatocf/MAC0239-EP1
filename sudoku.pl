@@ -12,7 +12,6 @@ use lib "$Bin/Sudoku";
 
 # Classes
 use Sudoku;
-use Zchaff;
 
 #######################################################################
 ##                              OPTIONS                              ##
