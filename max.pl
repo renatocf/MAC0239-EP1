@@ -5,6 +5,11 @@ my $max = -1;
 
 while(my $line = <>)
 {
+    last if $line =~ /^p/;
+}
+
+while(my $line = <>)
+{
     chomp $line;
     my @nums = split " ", $line;
     for my $num (@nums) {
