@@ -19,8 +19,6 @@ my Sudoku $sudoku = new Sudoku(3);
 $sudoku->gen_cnf();
 $sudoku->grid_print();
 
-my $sat_solver = Zchaff::init(729);
-
 #######################################################################
 ##                          DOCUMENTATION                            ##
 #######################################################################
