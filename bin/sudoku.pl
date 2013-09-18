@@ -8,7 +8,7 @@ use warnings;
 
 # Libraries
 use FindBin qw($Bin);
-use lib "$Bin/Sudoku";
+use lib "$Bin/../lib";
 
 # Classes
 use Sudoku;
