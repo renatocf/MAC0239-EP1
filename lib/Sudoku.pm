@@ -8,7 +8,7 @@ use warnings;
 
 # Libraries
 use cnf;
-use grid_print;
+use grid::print;
 use num_lines;
 use solution;
 use upload;

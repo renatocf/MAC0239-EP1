@@ -12,7 +12,7 @@ use fml::given;
 use fml::lines;
 use fml::square;
 use fml::subgrid;
-use grid_scroll;
+use grid::scroll;
 
 #######################################################################
 ##                             HEADER                                ##
