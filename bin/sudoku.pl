@@ -9,6 +9,7 @@ use warnings;
 # Libraries
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
+my $Doc = "$Bin/../doc/";
 
 # Classes
 use Sudoku;
@@ -33,10 +34,14 @@ GetOptions(
 # Help
 if($help) 
 { 
-    system("man ./sudoku.6");
+    system("man $Doc/sudoku.6");
     if($?) # Error with man
-    { print while <DATA>; }
-    die; 
+    { 
+        open  LESS, "|-", "less";
+        print LESS while <DATA>;
+        close LESS;
+    }
+    die "\n"; 
 }
 
 my $usage = << "USAGE";

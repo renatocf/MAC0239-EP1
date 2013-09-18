@@ -7,11 +7,11 @@ use strict;
 use warnings;
 
 # Libraries
-use fml::fml_columns;
-use fml::fml_lines;
-use fml::fml_given;
-use fml::fml_square;
-use fml::fml_subgrid;
+use fml::columns;
+use fml::given;
+use fml::lines;
+use fml::square;
+use fml::subgrid;
 use grid_scroll;
 
 #######################################################################
