@@ -8,12 +8,6 @@ use warnings;
 
 # Libraries
 use cnf;
-use fml_columns;
-use fml_lines;
-use fml_given;
-use fml_square;
-use fml_subgrid;
-use grid_scroll;
 use grid_print;
 use num_lines;
 use solution;

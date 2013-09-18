@@ -18,8 +18,9 @@ sub solution
     my $nsq = $sudoku->{N_SQUARES};
     qx/minisat ${nsq}x${nsq}_sudoku.cnf ${nsq}x${nsq}_sudoku.ans/;
     
-    close($sudoku->{ANSWER}) if ref $sudoku->{ANSWER};
-    open($sudoku->{ANSWER}, "<", "${nsq}x${nsq}_sudoku.ans");
+    close ($sudoku->{ANSWER}) if ref $sudoku->{ANSWER};
+    open  ($sudoku->{ANSWER}, "<", "${nsq}x${nsq}_sudoku.ans") 
+    or die "Cannot open ${nsq}x${nsq}_sudoku.ans for reading\n";
     
     # Lock file for not overwriting wjile reading
     flock $sudoku->{ANSWER}, LOCK_SH
