@@ -16,12 +16,14 @@ use Term::ANSIColor qw(:constants);
 #              yet, the function calls the method responsible for that.
 sub grid_print 
 {
-    my $sudoku = shift;
+    my $sudoku = shift; # Object
+    my $ANS       = $sudoku->solve;
     my $prop      = $sudoku->{PROP};
     my $input     = $sudoku->{SUDOKU};
     my $n_squares = $sudoku->{N_SQUARES};
-    my $ANS = $sudoku->solution();
     
+    defined $ANS or die "No answer defined!\n";
+        
     chomp(my $title = <$ANS>);
     say "The problem is $title.";
     $title =~ /^(UN|)SAT$/i or die "Not a minisat answer!";

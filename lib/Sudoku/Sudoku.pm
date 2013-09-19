@@ -10,7 +10,7 @@ use warnings;
 use cnf;
 use grid::print;
 use num_lines;
-use solution;
+use solve;
 use upload;
 
 #######################################################################
