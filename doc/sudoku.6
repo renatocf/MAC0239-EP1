@@ -93,19 +93,32 @@ grid (input numbers in red):
 ."---------------------------------------------------------------------
 
 .TP 
-.I sudoku.pl
+.I bin/sudoku.pl
 Main program with the user interface.
 
 .TP 
-.I Sudoku/Sudoku.pm 
+.I bin/draw_sudoku.pl
+Gets an output made by minisat and prints a matrix
+with it. Receives as an argument the proportion of 
+the Sudoku (9, 16, etc), and outputs it. 
+
+.TP 
+.I bin/max.pl
+Scans a 
+.B .cnf 
+file and finds the biggest variable 
+(debugging purposes).
+
+.TP 
+.I lib/Sudoku/Sudoku.pm 
 Main interface with the module, providing 
 .B constructor, destructor
 and the defition of the object related 
 to the sudoku.
 
 .TP 
-.I Sudoku/cnf.pm\ \ \ 
-Uses the modules with formules to print the
+.I lib/Sudoku/cnf.pm\ \ \ 
+Uses the modules with formules to print the 
 .B .cnf
 file that may be provided as input to the SAT solver.
 
@@ -115,27 +128,30 @@ Directory with subroutines that print each type of
 formule that solves the problem.
 
 .TP 
-.I Sudoku/grid_scroll.pm 
+.I lib/Sudoku/grid/scroll.pm 
 Suboutine that scrolls the grid in order to run the
 previous functions and print the clauses.
 
 .TP 
-.I Sudoku/grid_print.pm 
+.I lib/Sudoku/grid/print.pm 
 If the term supports colors, outputs in a colored and 
 more visible way the SAT solver answer.
 
 .TP 
-.I Sudoku/num_lines.pm 
+.I lib/Sudoku/num_lines.pm 
 Deterministically calculates the number of clauses that
 will be used to describe the sudoku (without the input).
 
 .TP 
-.I Sudoku/solution.pm
-Calls the SAT solvers (\fBminisat\fE or \fBzChaff\fE, 
+.I lib/Sudoku/solve.pm
+Calls the SAT solvers (
+.B minisat 
+or 
+.B zChaff, 
 wich one is avaiable in the system). 
 
 .TP 
-.I Sudoku/upload.pm
+.I lib/Sudoku/upload.pm
 Given the file with the sudoku, uploads the input in
 the system and sums in the number of clauses.
 
