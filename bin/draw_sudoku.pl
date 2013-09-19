@@ -5,13 +5,13 @@ use v5.14;
 
 # Receives as input the number of queens
 scalar @ARGV == 1 and my $n_squares = shift @ARGV 
-or die "USAGE: draw sudoku.pl n_squares\n";
+or die "USAGE: draw sudoku.pl n_squares < input.txt\n";
 
 $n_squares =~ /^(\d+)$/
-or die "The proportion must be made only by integers";
+or die "The size must be made only by integers";
 
 ($n_squares = $1) > 0
-or die "The proporion be strictly positive";
+or die "The size be strictly positive";
 
 # Discards first line, checking if it is a minisat ans
 chomp(my $title = <>);
