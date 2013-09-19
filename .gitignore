@@ -4,6 +4,7 @@
 *.ans
 *.zchaff
 *.minisat
+bin/minisat
 
 # pdf's
 *.pdf
