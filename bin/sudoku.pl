@@ -8,7 +8,7 @@ use warnings;
 
 # Libraries
 use FindBin qw($Bin);
-use lib "$Bin/../lib";
+use lib "$Bin/../lib/Sudoku";
 my $Doc = "$Bin/../doc/";
 
 # Classes
@@ -21,10 +21,12 @@ use Sudoku;
 # Options
 use Getopt::Long;
 my $help = undef;
+my $verb = undef;
 my $size = 9;
 GetOptions(
-    "help"   => \$help, 
-    "size=i" => \$size,
+    "verbose" => \$verb,
+    "help"    => \$help, 
+    "size=i"  => \$size,
 );
 
 #######################################################################
@@ -64,8 +66,10 @@ my $filename = shift;
 open(my $fh, "<", $filename);
 
 my Sudoku $sudoku = new Sudoku($prop);
+
 $sudoku->upload     ($fh);
 $sudoku->gen_cnf    ();
+$sudoku->solve      ($Bin);
 $sudoku->grid_print ();
 
 #######################################################################
