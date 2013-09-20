@@ -25,7 +25,7 @@ sub grid_print
     defined $ANS or die "No answer defined!\n";
         
     chomp(my $title = <$ANS>);
-    say "The problem is $title.";
+    say "The problem is ", uc $title, ".";
     $title =~ /^(UN|)SAT$/i or die "Not a minisat answer!";
     exit if($1);
     
@@ -34,30 +34,65 @@ sub grid_print
     
     # The middle
     $/ = " ";
-    my ($i, $count, $blocks) = (0, -1, 0);
+    my ($vars_read, $count, $lines) = (0, -1, 0);
     while(my $var = <$ANS>)
     {
-        if($var > 0)
+        # Ignores variables <= 0. Otherwise, sum 
+        # the number of vars read and the counter
+        next if($var <= 0);
+        $vars_read++; $count++;
+        
+        # Normalizes the variable number to the $n_squares 
+        # interval. If it is 0, changes it to $n_squares
+        my $ans = $var % $n_squares; 
+        ($ans == 0) ? ($ans += $n_squares) : ();
+        
+        # Prints a grid separator from $prop to $prop lines
+        ($count % $prop == 0 and $count % $n_squares != 0) 
+            ? (print BOLD, YELLOW, "| ", RESET)
+            : (print "| ")
+        ;
+        
+        # Print with colors (if available)
+        # ($res == 2)
+        ($input->[$count])
+            ? (print BOLD, RED,   "$ans ", RESET)
+            : (print BOLD, WHITE, "$ans ", RESET)
+        ;
+       
+        # $n_squares vars already read: end of line
+        if($vars_read % $n_squares == 0)
         {
-            my $res; $i++; $count++;
-            unless($res = $var % $n_squares) { $res += $n_squares }
+            # Line finishes and is counted
+            print "|\n"; $lines++;
             
-            print "| ";
-            
-            # Print with colors (if available)
-            # ($res == 2)
-            ($input->[$count])
-                ? (print BOLD, RED,   "$res ", RESET)
-                : (print BOLD, WHITE, "$res ", RESET);
-           
-            if($i % $n_squares == 0)
+            # Unless it is the last
+            if($vars_read != $n_squares**2)
             {
+                # Prints $n_squares vertical bars 
+                # to make a separator between lines.
+                for(my $k = 0; $k < $n_squares; $k++) 
+                {
+                    # Prints a vertival grid separator 
+                    # ('|') from $prop to $prop times
+                    ($k != 0 and $k % $prop == 0) 
+                        ? (print BOLD, YELLOW, "|", RESET) 
+                        : (print BOLD, WHITE,  "|", RESET)
+                    ;
+                    
+                    # Print a horizontal grid separator 
+                    # ('-') from $prop to $prop times
+                    ($lines != 1 and $lines % $prop == 0)
+                        ? (print BOLD, YELLOW, "---", RESET)
+                        : (print BOLD, WHITE,  "---", RESET)
+                    ;
+                }
+                # End of the auxiliar line
                 print "|\n";
-                ($i != $n_squares**2)
-                    ? (print "|---" x $n_squares, "|\n") : ();
-            }
-        }
-    }
+                
+            } # $vars_read
+        } # n_squares read
+    } # <$var>
 
     # And finally the bottom
     print "'---" x $n_squares, "'\n";
