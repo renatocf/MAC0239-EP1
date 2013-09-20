@@ -44,10 +44,11 @@ sub grid_print
             
             print "| ";
             
-            # Print with colors (if avaiable)
-            ($input->[$count]) 
-                ? (print BOLD, RED, "$res ", RESET)
-                : (print "$res ");
+            # Print with colors (if available)
+            # ($res == 2)
+            ($input->[$count])
+                ? (print BOLD, RED,   "$res ", RESET)
+                : (print BOLD, WHITE, "$res ", RESET);
            
             if($i % $n_squares == 0)
             {
