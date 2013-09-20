@@ -23,10 +23,12 @@ use Getopt::Long;
 my $help = undef;
 my $verb = undef;
 my $size = 9;
+
+Getopt::Long::Configure('bundling');
 GetOptions(
-    "verbose" => \$verb,
-    "help"    => \$help, 
-    "size=i"  => \$size,
+    "v|verbose" => \$verb,
+    "h|help"    => \$help, 
+    "s|size=i"  => \$size,
 );
 
 #######################################################################
