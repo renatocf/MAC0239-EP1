@@ -8,8 +8,8 @@ use warnings;
 
 # Libraries
 use FindBin qw($Bin);
-use lib "$Bin/../lib/Sudoku";
-my $Doc = "$Bin/../doc/";
+use lib    "$Bin/../lib/Sudoku";
+my  $Doc = "$Bin/../doc/";
 
 # Classes
 use Sudoku;
@@ -20,15 +20,21 @@ use Sudoku;
 
 # Options
 use Getopt::Long;
-my $help = undef;
-my $verb = undef;
-my $size = 9;
+my $cnf     = undef;
+my $help    = undef;
+my $proof   = undef;
+my $zchaff  = undef;
+my $minisat = undef;
+my $size    = 9;
 
 Getopt::Long::Configure('bundling');
 GetOptions(
-    "v|verbose" => \$verb,
-    "h|help"    => \$help, 
-    "s|size=i"  => \$size,
+    "c|cnf-only"  => \$cnf, 
+    "h|help"      => \$help, 
+    "m|minisat=s" => \$minisat,
+    "p|proof"     => \$proof,
+    "s|size=i"    => \$size,
+    "z|zchaff=s"  => \$zchaff,
 );
 
 #######################################################################
@@ -49,7 +55,7 @@ if($help)
 }
 
 my $usage = << "USAGE";
-USAGE: sudoku.pl input.txt [-h] [-s]
+USAGE: sudoku.pl input.txt [-h] [-s] [-c] [-m|-z] [-p]
 Type --help for more information
 USAGE
 
@@ -67,12 +73,18 @@ my $prop = int sqrt $size;
 my $filename = shift;
 open(my $fh, "<", $filename);
 
-my Sudoku $sudoku = new Sudoku($prop);
+# SAT solver info
+my ($solver, $path);
+if    ($minisat) { ($solver, $path) = ("minisat", $minisat); }
+elsif ($zchaff)  { ($solver, $path) = ("zchaff",  $zchaff);  }
+else             { ($solver, $path) = ("minisat", $Bin);     }
 
+# Pipeline
+my Sudoku $sudoku = new Sudoku($prop);
 $sudoku->upload     ($fh);
 $sudoku->gen_cnf    ();
-$sudoku->solve      ($Bin);
-$sudoku->grid_print ();
+$sudoku->solve      ($solver, $path, $proof) if(not $cnf); 
+$sudoku->grid_print ()                       if(not $cnf);
 
 #######################################################################
 ##                            DOCUMENTATION                          ##
@@ -95,12 +107,29 @@ See OPTIONS for more details.
 
 § OPTIONS
 =================================================
+-c, --cnf-only
+    Does not  print the output,  but only produce
+    the .cnf file with the SAT solver input.
+    
 -h, --help
     Display the help message.
 
+-m, --minisat=s
+    Set the  SAT solver  as minisat  (the default
+    solver), but with a configurable path.
+
+-p, --proof
+    Creates a .stat  file with all the statistics
+    (profile info) made by the SAT solver.
+    
 -s, --size=i
     Set a  perfect square integer as the size  of 
     the sudoku.
+
+-z, --zchaff=s
+    Set  the  SAT solver as  zChaff  (in place of
+    to minisat), receiveing the path to its binary
+    (which must be named as 'zchaff').
 
 § EXAMPLES
 =================================================
@@ -155,36 +184,54 @@ grid (input numbers in red):
 * sudoku.pl
     Main program with the user interface.
 
-* Sudoku/Sudoku.pl
+* bin/draw_sudoku.pl
+    Gets an  output made  by minisat and prints a 
+    matrix with it.  Receives as an argument  the 
+    proportion  of  the  Sudoku (9, 16, etc)  and, 
+    from the stdin, the SAT solver anwer. 
+
+* bin/max.pl
+    Scans  a  .cnf  file  and  finds  the biggest 
+    variable (debbuging purposes).
+
+* lib/Sudoku/Sudoku.pm
     
     Main interface with the module, providing and 
     the  defition  of the  object related to  the 
     sudoku.
 
-* Sudoku/cnf.pm
+* lib/Soduku/cnf.pm
     
     Uses  the modules  with formules to print the 
     file that may be provided as input to the SAT 
     solver.
 
-* Sudoku/fml/
+* lib/Soduku/fml/
     Directory  with subroutines  that print  each 
     type of formule that solves the problem.
 
-* Sudoku/grid_scroll.pm
+* lib/Soduku/grid_scroll.pm
 
     Suboutine that scrolls the grid in  order  to
     run  the  previous  functions  and print  the 
     clauses.
 
-* Sudoku/grid_print
+* lib/Soduku/grid_print
     
     If  the  term  supports  colors, outputs in a 
     colored  and more visible way  the SAT solver 
     answer.
 
-* Sudoku/solutions.pm
-    
-    Deterministically  calculates the  number  of 
-    clauses  that  will  be  used to describe the 
+* lib/Sudoku/num_lines.pm
+    Deterministically  calculates  the  number of 
+    clauses  that  will be  used to describe  the 
     sudoku (without the input).
+    
+* lib/Sudoku/solve.pm
+    Calls the SAT solver (minisat, came with this 
+    source.
+
+* lib/Sudoku/upload.pm
+    Given the file  with the sudoku,  uploads the 
+    input in the system and sums in the number of
+    clauses.

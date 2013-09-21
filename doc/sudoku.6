@@ -9,7 +9,7 @@ sudoku.pl - a sudoku SAT-based solver
 .SH SYNOPSIS
 ."---------------------------------------------------------------------
 sudoku.pl
-.B [-h] [-s] 
+.B [-h] [-s] [-c] [-m|-z] [-p]
 .I input.txt
 
 Outputs the answer of the sudoku given as input.
@@ -25,13 +25,34 @@ for more details.
 
 .SH OPTIONS
 ."---------------------------------------------------------------------
+.TP
+.BR \-c,\ --cnf\-only
+Does not print the output, but only produce
+the .cnf file with the SAT solver input.
+
 .TP 
 .BR \-h,\ --help
 Display the help message.
 
+.TP
+.BR \-m,\ --minisat=\fIs\fE
+Set the SAT solver as "minisat" (the default solver), 
+but with a configurable path.
+
+.TP
+.BR \-p,\ --proof
+Creates a .stat file with all the statistics (profile 
+info) made by the SAT solver.
+
 .TP 
-.BR \-s,\ --size=\fII\fE
+.BR \-s,\ --size=\fIi\fE
 Set a perfect square integer as the size of the sudoku.
+
+.TP
+.BR \-z,\ --zchaff=\fIs\fE
+Set the SAT solver as zChaff (in place of to minisat), 
+receiveing the path to its binary (which must be named 
+as "zchaff").
 
 .SH EXAMPLES
 ."---------------------------------------------------------------------
@@ -100,7 +121,8 @@ Main program with the user interface.
 .I bin/draw_sudoku.pl
 Gets an output made by minisat and prints a matrix
 with it. Receives as an argument the proportion of 
-the Sudoku (9, 16, etc), and outputs it. 
+the Sudoku (9, 16, etc) and, from the stdin, the
+SAT solver anwer. 
 
 .TP 
 .I bin/max.pl
@@ -144,11 +166,9 @@ will be used to describe the sudoku (without the input).
 
 .TP 
 .I lib/Sudoku/solve.pm
-Calls the SAT solvers (
-.B minisat 
-or 
-.B zChaff, 
-wich one is avaiable in the system). 
+Calls the SAT solver (
+.B minisat,
+came with this source).
 
 .TP 
 .I lib/Sudoku/upload.pm

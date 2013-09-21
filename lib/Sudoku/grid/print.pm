@@ -26,7 +26,7 @@ sub grid_print
         
     chomp(my $title = <$ANS>);
     say "The problem is ", uc $title, ".";
-    $title =~ /^(UN|)SAT$/i or die "Not a minisat answer!";
+    $title =~ /^(UN|)SAT$/i or die "Not a SAT solver answer!";
     exit if($1);
     
     # Prints the top of the table
@@ -49,7 +49,7 @@ sub grid_print
         
         # Prints a grid separator from $prop to $prop lines
         ($count % $prop == 0 and $count % $n_squares != 0) 
-            ? (print BOLD, YELLOW, "| ", RESET)
+            ? (print BOLD, YELLOW, "‖ ", RESET)
             : (print "| ")
         ;
         
@@ -76,14 +76,14 @@ sub grid_print
                     # Prints a vertival grid separator 
                     # ('|') from $prop to $prop times
                     ($k != 0 and $k % $prop == 0) 
-                        ? (print BOLD, YELLOW, "|", RESET) 
+                        ? (print BOLD, YELLOW, "‖", RESET) 
                         : (print BOLD, WHITE,  "|", RESET)
                     ;
                     
                     # Print a horizontal grid separator 
                     # ('-') from $prop to $prop times
                     ($lines != 1 and $lines % $prop == 0)
-                        ? (print BOLD, YELLOW, "---", RESET)
+                        ? (print BOLD, YELLOW, "===", RESET)
                         : (print BOLD, WHITE,  "---", RESET)
                     ;
                 }
