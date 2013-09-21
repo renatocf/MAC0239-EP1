@@ -3,7 +3,7 @@
 *.cnf
 *.ans
 *.zchaff
-*.minisat
+*.stat
 bin/minisat
 
 # pdf's
