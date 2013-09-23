@@ -23,7 +23,7 @@ sub upload
     while(my $vars = <$fh>)
     {
         chomp $vars;
-        next if($vars =~ /^\s*#/);
+        $vars =~ s/(.*?)#(.*)/$1/;
         
         # If there is a variable defined, we 
         # know the values of one of the squares
@@ -34,9 +34,13 @@ sub upload
         # and, in this case, throws an exception...    
         $n += scalar @vars;
         if($n > $n_squares**2) {
-            die "Exceeded number of arguments\n", "Stopped at $!\n";
+            die "Exceeded number of arguments\n";
         }
         else { push @all, @vars; }
+    }
+    
+    if($n < $n_squares**2) { 
+        die "Not enought arguments\n", "Stopped at $!z\n";
     }
     
     $sudoku->{SUDOKU} = \@all;

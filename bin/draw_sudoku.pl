@@ -15,8 +15,8 @@ or die "The size be strictly positive";
 
 # Discards first line, checking if it is a minisat ans
 chomp(my $title = <>);
-say "The problem is $title.";
-$title =~ /^(UN|)SAT$/i or die "Not a minisat answer!";
+say "The problem is ", uc $title, ".";
+$title =~ /^(UN|)SAT$/i or die "Not a SAT solver answer!";
 exit if($1);
 
 # Prints the top of the table
